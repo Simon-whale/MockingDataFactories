@@ -48,4 +48,24 @@ public class MockDataResponseTests
         account.Balance.ShouldBe(12);
         account.Status.ShouldBe(1);
     }
+
+    [Test]
+    public void Should_Return_Nothing()
+    {
+        Mock<IDataFactory> dataStoreFactory = new Mock<IDataFactory>();
+        Mock<IAccountStore> accountStore = new Mock<IAccountStore>();
+        
+        dataStoreFactory
+            .Setup(p => p.GetDataStore(It.IsAny<string>()))
+            .Returns(accountStore.Object);
+
+        accountStore
+            .Setup(p => p.GetAccount(It.IsAny<string>()))
+            .Returns(new Account());
+
+        var store = dataStoreFactory.Object.GetDataStore("backup");
+        var account = store.GetAccount("SW13");
+        account.ShouldNotBe(null);
+        account.Balance.ShouldBe(0);
+    }
 }
